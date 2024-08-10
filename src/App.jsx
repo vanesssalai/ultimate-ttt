@@ -6,7 +6,7 @@ import UltimateBoard from './components/ultimateBoard'
 function App() {
   return (
     <>
-      <h1 className='flex justify-center align-middle'>Ultimate Tic Tac Toe</h1>
+      <h1 className='flex font-semibold text-3xl justify-center align-middle'>Ultimate Tic Tac Toe</h1>
       <button>Invite a Friend!</button>
       {/* <button>New Game</button> */}
       <UltimateBoard />
