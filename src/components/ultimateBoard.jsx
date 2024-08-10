@@ -11,6 +11,10 @@ const UltimateBoard = () => {
     setGameState((prevState) => makeMove(prevState, ultimateBoardIndex, normalBoardIndex));
   };
 
+    const restartGame = () => {
+    setGameState(createInitialState());
+  };
+
   const ultimateWinner = checkWinner(gameState.ultimateBoard);
 
   const getBackgroundColor = (index) => {
