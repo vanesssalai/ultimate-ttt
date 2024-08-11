@@ -1,8 +1,9 @@
-export const createInitialState = () => ({
+export const createInitialState = (players) => ({
   ultimateBoard: Array(9).fill(null),
   normalBoards: Array(9).fill(Array(9).fill(null)),
   currentPlayer: 'X',
   nextBoardIndex: null,
+  players: players,
 });
 
 export const checkWinner = (board) => {
@@ -52,10 +53,18 @@ export const makeMove = (state, ultimateBoardIndex, normalBoardIndex) => {
       ? null
       : normalBoardIndex;
 
+  const isTie = !checkWinner(newUltimateBoard) && checkTie(newUltimateBoard);
+
   return {
     ultimateBoard: newUltimateBoard,
     normalBoards: newNormalBoards,
     currentPlayer: state.currentPlayer === 'X' ? 'O' : 'X',
     nextBoardIndex,
+    isTie,
+    players: state.players,
   };
+};
+
+export const checkTie = (board) => {
+  return board.every(cell => cell !== null);
 };
