@@ -19,7 +19,7 @@ const UltimateBoard = ({ gameId, playerId }) => {
       setGameState(newState);
     });
   
-    console.log(playerId);
+    console.log('Player ID:', playerId);
 
     return () => {
       socket.off('gameStart');

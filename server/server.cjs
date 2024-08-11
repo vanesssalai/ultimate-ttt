@@ -12,6 +12,16 @@ const io = new Server(server, {
 
 const games = new Map();
 
+function createInitialState(players) {
+  return {
+    players: players,
+    currentPlayer: 'X',
+    ultimateBoard: Array(9).fill(null),
+    normalBoards: Array(9).fill(Array(9).fill(null)),
+    nextBoardIndex: null,
+  };
+}
+
 io.on('connection', (socket) => {
   console.log('new connection');
 

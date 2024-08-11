@@ -63,18 +63,23 @@ const GameLobby = ({ onGameStart }) => {
         await socketService.connect();
         setIsConnected(true);
         socketService.onGameStart(handleGameStart);
+        socketService.onGameJoined(handleGameJoined);
       } catch (error) {
         console.error('Failed to connect to socket server:', error);
       }
     };
     connectSocket();
-  }, [onGameStart]);
+  }, []);
 
   const handleGameStart = ({ gameId, players }) => {
     setGameId(gameId);
-    setPlayerId(players[0]);
-    console.log('players' + players);
+    setPlayerId(socket.id);
     setGameStarted(true);
+  };
+
+  const handleGameJoined = ({ gameId, players }) => {
+    setGameId(gameId);
+    setPlayerId(socket.id);
   };
 
   const createGame = () => {
@@ -82,12 +87,13 @@ const GameLobby = ({ onGameStart }) => {
     socketService.createGame((id) => {
       setGameId(id);
       setCreatedGameId(id);
+      setPlayerId(socket.id);
     });
   };
 
   const joinGame = () => {
     if (!isConnected) return;
-    socketService.joinGame(gameId, onGameStart);
+    socketService.joinGame(gameId);
   };
 
   const copyToClipboard = (text) => {
