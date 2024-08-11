@@ -41,10 +41,6 @@ const UltimateBoard = ({ gameId, playerId }) => {
     socket.emit('makeMove', { gameId, move: newState });
   };
 
-    const restartGame = () => {
-    setGameState(createInitialState());
-  };
-
   const ultimateWinner = checkWinner(gameState.ultimateBoard);
 
   const getBackgroundColor = (index) => {
