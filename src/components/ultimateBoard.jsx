@@ -5,22 +5,18 @@ import { FaRegCircle, FaTimes } from "react-icons/fa";
 import { createInitialState, makeMove, checkWinner } from "./gameLogic";
 import { socket } from '../socket';
 
-const UltimateBoard = ({ gameId, playerId }) => {
+const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
   const [gameState, setGameState] = useState(createInitialState());
-  const [localPlayer, setLocalPlayer] = useState(null);
 
   useEffect(() => {
     socket.on('gameStart', (initialState) => {
       setGameState(initialState);
-      setLocalPlayer(playerId === initialState.players[0] ? 'X' : 'O');
     });
   
     socket.on('moveMade', (newState) => {
       setGameState(newState);
     });
   
-    console.log('Player ID:', playerId);
-
     return () => {
       socket.off('gameStart');
       socket.off('moveMade');
@@ -64,7 +60,7 @@ const UltimateBoard = ({ gameId, playerId }) => {
           </>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-2 bg-gray-200">
+      <div className="grid grid-cols-3 gap-2 bg-gray-100">
         {gameState.ultimateBoard.map((cell, index) => (
           <div key={index} className={`p-4 ${getBackgroundColor(index)}`}>
             {cell ? (

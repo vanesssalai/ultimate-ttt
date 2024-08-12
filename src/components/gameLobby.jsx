@@ -27,6 +27,10 @@ class SocketService {
     socket.on('gameJoined', callback);
   }
 
+  onGameJoined(callback) {
+    socket.on('gameJoined', callback);
+  }
+
   onGameStart(callback) {
     socket.on('gameStart', callback);
   }
@@ -56,6 +60,7 @@ const GameLobby = ({ onGameStart }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [playerId, setPlayerId] = useState('');
   const [createdGameId, setCreatedGameId] = useState('');
+  const [localPlayer, setLocalPlayer] = useState(null);
 
   useEffect(() => {
     const connectSocket = async () => {
@@ -74,20 +79,22 @@ const GameLobby = ({ onGameStart }) => {
   const handleGameStart = ({ gameId, players }) => {
     setGameId(gameId);
     setPlayerId(socket.id);
+    setLocalPlayer(players.indexOf(socket.id) === 0 ? 'X' : 'O');
     setGameStarted(true);
   };
-
+  
   const handleGameJoined = ({ gameId, players }) => {
     setGameId(gameId);
     setPlayerId(socket.id);
+    setLocalPlayer(players.indexOf(socket.id) === 0 ? 'X' : 'O');
   };
-
   const createGame = () => {
     if (!isConnected) return;
     socketService.createGame((id) => {
       setGameId(id);
       setCreatedGameId(id);
       setPlayerId(socket.id);
+      setLocalPlayer('X'); 
     });
   };
 
@@ -109,8 +116,8 @@ const GameLobby = ({ onGameStart }) => {
   }
 
   if (gameStarted) {
-    console.log(playerId);
-    return <UltimateBoard gameId={gameId} playerId={playerId} />;
+    console.log('Local Player:', localPlayer);
+    return <UltimateBoard gameId={gameId} playerId={playerId} localPlayer={localPlayer} />;
   }
 
   return (
