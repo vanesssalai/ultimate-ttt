@@ -23,7 +23,7 @@ function createInitialState(players) {
 }
 
 io.on('connection', (socket) => {
-  console.log('new connection');
+  console.log('New connection:', socket.id);
 
   socket.on('createGame', () => {
     const gameId = Math.random().toString(36).substring(7);
@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinGame', (gameId) => {
+    console.log('Join game request:', gameId);
     const game = games.get(gameId);
     if (game && game.players.length < 2) {
       game.players.push(socket.id);
@@ -49,10 +50,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('makeMove', ({ gameId, move }) => {
+    console.log('Move made in game:', gameId, 'by player:', socket.id);
+    console.log('New game state:', move);
     const game = games.get(gameId);
     if (game) {
       game.gameState = move;
       io.to(gameId).emit('moveMade', move);
+      console.log('Move broadcast to room:', gameId);
+    } else {
+      console.error('Game not found:', gameId);
     }
   });
 

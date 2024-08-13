@@ -3,58 +3,7 @@ import { socket } from "../socket";
 import UltimateBoard from './ultimateBoard';
 import { FaCopy } from 'react-icons/fa';
 
-class SocketService {
-  connect() {
-    return new Promise((resolve, reject) => {
-      socket.on('connect', () => {
-        console.log('Connected to socket server');
-        resolve();
-      });
-      socket.on('connect_error', (error) => {
-        console.error('Connection error:', error.message);
-        reject(error);
-      });
-    });
-  }
-
-  createGame(callback) {
-    socket.emit('createGame');
-    socket.on('gameCreated', callback);
-  }
-
-  joinGame(gameId, callback) {
-    socket.emit('joinGame', gameId);
-    socket.on('gameJoined', callback);
-  }
-
-  onGameJoined(callback) {
-    socket.on('gameJoined', callback);
-  }
-
-  onGameStart(callback) {
-    socket.on('gameStart', callback);
-  }
-
-  makeMove(gameId, move) {
-    socket.emit('makeMove', { gameId, move });
-  }
-
-  onMoveMade(callback) {
-    socket.on('moveMade', callback);
-  }
-
-  onPlayerLeft(callback) {
-    socket.on('playerLeft', callback);
-  }
-
-  disconnect() {
-    socket.disconnect();
-  }
-}
-
-const socketService = new SocketService();
-
-const GameLobby = ({ onGameStart }) => {
+const GameLobby = () => {
   const [gameId, setGameId] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
@@ -63,44 +12,63 @@ const GameLobby = ({ onGameStart }) => {
   const [localPlayer, setLocalPlayer] = useState(null);
 
   useEffect(() => {
-    const connectSocket = async () => {
-      try {
-        await socketService.connect();
-        setIsConnected(true);
-        socketService.onGameStart(handleGameStart);
-        socketService.onGameJoined(handleGameJoined);
-      } catch (error) {
-        console.error('Failed to connect to socket server:', error);
-      }
+    const handleConnect = () => {
+      console.log('Connected to socket server');
+      setIsConnected(true);
     };
-    connectSocket();
-  }, []);
 
-  const handleGameStart = ({ gameId, players }) => {
-    setGameId(gameId);
-    setPlayerId(socket.id);
-    setLocalPlayer(players.indexOf(socket.id) === 0 ? 'X' : 'O');
-    setGameStarted(true);
-  };
-  
-  const handleGameJoined = ({ gameId, players }) => {
-    setGameId(gameId);
-    setPlayerId(socket.id);
-    setLocalPlayer(players.indexOf(socket.id) === 0 ? 'X' : 'O');
-  };
-  const createGame = () => {
-    if (!isConnected) return;
-    socketService.createGame((id) => {
+    const handleConnectError = (error) => {
+      console.error('Connection error:', error);
+    };
+
+    const handleGameStart = (initialState) => {
+      console.log('Game started:', initialState);
+      setGameId(gameId);
+      setPlayerId(socket.id);
+      setLocalPlayer(initialState.players.indexOf(socket.id) === 0 ? 'X' : 'O');
+      setGameStarted(true);
+    };
+
+    const handleGameJoined = ({ gameId, players }) => {
+      console.log('Game joined:', gameId, players);
+      setGameId(gameId);
+      setPlayerId(socket.id);
+      setLocalPlayer(players.indexOf(socket.id) === 0 ? 'X' : 'O');
+    };
+
+    const handleGameCreated = (id) => {
+      console.log('Game created:', id);
       setGameId(id);
       setCreatedGameId(id);
       setPlayerId(socket.id);
-      setLocalPlayer('X'); 
-    });
+      setLocalPlayer('X');
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('connect_error', handleConnectError);
+    socket.on('gameStart', handleGameStart);
+    socket.on('gameJoined', handleGameJoined);
+    socket.on('gameCreated', handleGameCreated);
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('connect_error', handleConnectError);
+      socket.off('gameStart', handleGameStart);
+      socket.off('gameJoined', handleGameJoined);
+      socket.off('gameCreated', handleGameCreated);
+    };
+  }, [gameId]);
+
+  const createGame = () => {
+    if (!isConnected) return;
+    console.log('Emitting createGame event');
+    socket.emit('createGame');
   };
 
   const joinGame = () => {
     if (!isConnected) return;
-    socketService.joinGame(gameId);
+    console.log('Emitting joinGame event:', gameId);
+    socket.emit('joinGame', gameId);
   };
 
   const copyToClipboard = (text) => {
@@ -115,15 +83,17 @@ const GameLobby = ({ onGameStart }) => {
     return <div>Connecting to server...</div>;
   }
 
-  if (gameStarted) {
-    console.log('Local Player:', localPlayer);
+  console.log('Rendering, gameStarted:', gameStarted, 'gameId:', gameId);
+
+  if (gameStarted && gameId) {
+    console.log('Rendering UltimateBoard with gameId:', gameId);
     return <UltimateBoard gameId={gameId} playerId={playerId} localPlayer={localPlayer} />;
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white p-10 rounded-lg shadow-lg text-center justify-center flex flex-col">
-        <button onClick={createGame}>Create New Game</button>
+        <button onClick={createGame} className="border-gray-400 rounded-md border-2 hover:text-white hover:bg-gray-400">Create New Game</button>
         {createdGameId ? 
           (
             <div className="flex items-center justify-center mt-4">
@@ -137,15 +107,15 @@ const GameLobby = ({ onGameStart }) => {
             </div>
           ) : (
             <>
-              <p className='m-4'>or</p>
+              <p className="m-4">or</p>
               <input
                 type="text"
-                value={gameId}
+                value={gameId || ''}
                 onChange={(e) => setGameId(e.target.value)}
                 placeholder="Enter Game ID"
-                className="border rounded-md"
+                className="border-2 rounded-md"
               />
-              <button onClick={joinGame}>Join Game</button>
+              <button onClick={joinGame} className="border-gray-400 rounded-md border-2 hover:text-white hover:bg-gray-400 my-2">Join Game</button>
             </>
         )}
       </div>

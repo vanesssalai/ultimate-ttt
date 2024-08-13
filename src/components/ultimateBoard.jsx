@@ -6,27 +6,41 @@ import { createInitialState, makeMove, checkWinner } from "./gameLogic";
 import { socket } from '../socket';
 
 const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
+  console.log('UltimateBoard props:', { gameId, playerId, localPlayer });
   const [gameState, setGameState] = useState(createInitialState());
 
   useEffect(() => {
-    socket.on('gameStart', (initialState) => {
+    console.log("Setting up socket listeners for game:", gameId);
+
+    const handleGameStart = (initialState) => {
+      console.log("Game started", initialState);
       setGameState(initialState);
-    });
-  
-    socket.on('moveMade', (newState) => {
-      setGameState(newState);
-    });
-  
-    return () => {
-      socket.off('gameStart');
-      socket.off('moveMade');
     };
-  }, [playerId]);
+
+    const handleMoveMade = (newState) => {
+      console.log("Move received", newState);
+      setGameState(newState);
+    };
+
+    socket.on('gameStart', handleGameStart);
+    socket.on('moveMade', handleMoveMade);
+
+    return () => {
+      console.log("Cleaning up socket listeners for game:", gameId);
+      socket.off('gameStart', handleGameStart);
+      socket.off('moveMade', handleMoveMade);
+    };
+  }, [gameId]);
 
   const handleMove = (ultimateBoardIndex, normalBoardIndex) => {
-    if (gameState.currentPlayer !== localPlayer) return;
+    if (gameState.currentPlayer !== localPlayer) {
+      console.log("Not your turn");
+      return;
+    }
 
+    console.log("Making move", ultimateBoardIndex, normalBoardIndex);
     const newState = makeMove(gameState, ultimateBoardIndex, normalBoardIndex);
+    console.log("New state after move:", newState);
     setGameState(newState);
     socket.emit('makeMove', { gameId, move: newState });
   };
@@ -60,7 +74,7 @@ const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
           </>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-2 bg-gray-100">
+      <div className="grid grid-cols-3 gap-2 bg-gray-100 border">
         {gameState.ultimateBoard.map((cell, index) => (
           <div key={index} className={`p-4 ${getBackgroundColor(index)}`}>
             {cell ? (

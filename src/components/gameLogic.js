@@ -28,6 +28,8 @@ export const checkWinner = (board) => {
 };
 
 export const makeMove = (state, ultimateBoardIndex, normalBoardIndex) => {
+  console.log("Making move:", ultimateBoardIndex, normalBoardIndex);
+  console.log("Current state:", state);
   if (state.nextBoardIndex !== null && state.nextBoardIndex !== ultimateBoardIndex) {
     return state; 
   }
@@ -55,14 +57,18 @@ export const makeMove = (state, ultimateBoardIndex, normalBoardIndex) => {
 
   const isTie = !checkWinner(newUltimateBoard) && checkTie(newUltimateBoard);
 
-  return {
+  const newState = {
     ultimateBoard: newUltimateBoard,
     normalBoards: newNormalBoards,
     currentPlayer: state.currentPlayer === 'X' ? 'O' : 'X',
     nextBoardIndex,
     isTie,
     players: state.players,
+    gameId: state.gameId,
   };
+
+  console.log("New state:", newState);
+  return newState;
 };
 
 export const checkTie = (board) => {
