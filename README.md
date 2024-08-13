@@ -1,9 +1,21 @@
 # Ultimate Tic Tac Toe
 Multiplayer Ultimate Tic Tac Toe using React, Express and Socketio
 
-![ultimate-ttt](/public/ultimate-ttt.png)
-
-Try it [here](https://ultimate-ttt.vercel.app/)
+## Getting Started
+1. Clone the repo
+``` bash
+git clone https://github.com/vanesssalai/ultimate-ttt.git
+```
+2. Install dependencies
+``` bash
+npm install
+```
+3. Run application
+``` bash
+node server/server.cjs
+npm run dev
+```
+4. Have Fun :)
 
 ## Rules
 The goal is to win 3 of the nine Tic Tac Toe (TTT) Boards arranged in a 3x3 grid.
