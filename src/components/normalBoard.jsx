@@ -13,9 +13,9 @@ const NormalBoard = ({ board, onCellClick, disabled }) => {
           onClick={() => !disabled && cell === null && onCellClick(index)}
         >
           {cell === "X" ? (
-            <FaRegCircle className="text-red-500" />
+            <FaTimes className="text-red-500" />
           ) : cell === "O" ? (
-            <FaTimes className="text-blue-500" />
+            <FaRegCircle className="text-blue-500" />
           ) : null}
         </div>
       ))}
