@@ -1,8 +1,19 @@
-# React + Vite
+# Ultimate Tic Tac Toe
+Multiplayer Ultimate Tic Tac Toe using React, Express and Socketio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![ultimate-ttt](/public/ultimate-ttt.png)
 
-Currently, two official plugins are available:
+Try it [here](https://ultimate-ttt.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Rules
+The goal is to win 3 of the nine Tic Tac Toe (TTT) Boards arranged in a 3x3 grid.
+
+The game starts with the host, 'X'.
+
+To win a small TTT board, like normal TTT, get 3 of your 'O' or 'X' symbols in a row.
+
+The position you place your symbol in will determine which of the 9 boards your opponent will play in next.
+
+For example, if you place your symbol in the top right cell of a small TTT board, your opponent must place their symbol on the top right board.
+
+If a small board is already won or all the cells are filled, the opponent can choose any available cells in any other board.
