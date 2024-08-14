@@ -1,11 +1,12 @@
 const express = require('express');
 const { createServer } = require('http');
 const { Server } = require("socket.io");
+const path = require('path');
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://ultimate-ttt-wk1e.onrender.com"],
     methods: ["GET", "POST"]
   }
 });
@@ -77,6 +78,8 @@ io.on('connection', (socket) => {
   });
 });
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
 const PORT = process.env.PORT || 10000;
 
 httpServer.listen(PORT, '0.0.0.0', () => {
@@ -85,6 +88,6 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`Port: ${PORT}`);
 });
 
-app.get('/', (req, res) => {
-  res.send('Server is running!');
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
