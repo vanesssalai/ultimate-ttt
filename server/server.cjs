@@ -1,9 +1,9 @@
 const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
+const { createServer } = require('http');
 const { Server } = require("socket.io");
-const io = new Server(server, {
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"]
@@ -77,5 +77,14 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 10000;
+
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Port: ${PORT}`);
+});
+
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
