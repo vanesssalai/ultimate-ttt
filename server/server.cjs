@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, 'src')));
+app.use(express.static(path.join(__dirname, '..', 'dist')));
 
 const PORT = process.env.PORT || 10000;
 
@@ -89,5 +89,5 @@ httpServer.listen(PORT, '0.0.0.0', () => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
 });
