@@ -1,6 +1,8 @@
 # Ultimate Tic Tac Toe
 Multiplayer Ultimate Tic Tac Toe using React, Express and Socketio
 
+Try it [here](https://ultimate-ttt-wk1e.onrender.com)
+
 ## Getting Started
 1. Clone the repo
 ``` bash
