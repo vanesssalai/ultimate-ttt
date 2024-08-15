@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { socket } from "../socket";
 import UltimateBoard from './ultimateBoard';
 import { FaCopy } from 'react-icons/fa';
+import { FaRegCircle, FaTimes } from "react-icons/fa";
+import toast, { Toaster } from 'react-hot-toast';
 
 const GameLobby = () => {
   const [gameId, setGameId] = useState('');
@@ -25,8 +27,19 @@ const GameLobby = () => {
       console.log('Game started:', initialState);
       setGameId(gameId);
       setPlayerId(socket.id);
-      setLocalPlayer(initialState.players.indexOf(socket.id) === 0 ? 'X' : 'O');
+      const isFirstPlayer = initialState.players.indexOf(socket.id) === 0;
+      setLocalPlayer(isFirstPlayer ? 'X' : 'O');
       setGameStarted(true);
+
+      toast.success(
+        `Game started! ${isFirstPlayer ? "It's your turn!" : "Waiting for opponent's move."}`,
+        {
+          icon: isFirstPlayer 
+            ? <FaTimes className="text-red-500" />
+            : <FaRegCircle className="text-blue-500" />,
+          duration: 4000,
+        }
+      );
     };
 
     const handleGameJoined = ({ gameId, players }) => {
@@ -74,6 +87,7 @@ const GameLobby = () => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
       console.log('GameID copied to clipboard');
+      toast.success('GameID copied to clipboard.')
     }).catch((err) => {
       console.error('Failed to copy text: ', err);
     });
