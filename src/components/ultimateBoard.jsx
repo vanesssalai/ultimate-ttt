@@ -4,6 +4,7 @@ import WinnerCard from "./winnerCard";
 import { FaRegCircle, FaTimes } from "react-icons/fa";
 import { createInitialState, makeMove, checkWinner } from "./gameLogic";
 import { socket } from '../socket';
+import toast, { Toaster } from 'react-hot-toast';
 
 const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
   console.log('UltimateBoard props:', { gameId, playerId, localPlayer });
@@ -20,6 +21,15 @@ const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
     const handleMoveMade = (newState) => {
       console.log("Move received", newState);
       setGameState(newState);
+      
+      if (newState.currentPlayer === localPlayer) {
+        toast.success("It's your turn!", {
+          icon: localPlayer === "X" 
+            ? <FaTimes className="text-red-500" />
+            : <FaRegCircle className="text-blue-500" />,
+          duration: 3000,
+        });
+      }
     };
 
     socket.on('gameStart', handleGameStart);
@@ -30,7 +40,7 @@ const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
       socket.off('gameStart', handleGameStart);
       socket.off('moveMade', handleMoveMade);
     };
-  }, [gameId]);
+  }, [gameId, localPlayer]);
 
   const handleMove = (ultimateBoardIndex, normalBoardIndex) => {
     if (gameState.currentPlayer !== localPlayer) {
@@ -61,8 +71,8 @@ const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center m-4">
-      <div className="mb-4">
+    <div className="flex flex-col items-center justify-center m-2 md:m-4">
+      <div className="mb-2 md:mb-4">
         {!ultimateWinner && (
           <>
             Current Turn:
@@ -74,9 +84,9 @@ const UltimateBoard = ({ gameId, playerId, localPlayer }) => {
           </>
         )}
       </div>
-      <div className="grid grid-cols-3 gap-2 bg-gray-100 border">
+      <div className="grid grid-cols-3 gap-1 md:gap-2 bg-gray-100 border w-full max-w-md aspect-square">
         {gameState.ultimateBoard.map((cell, index) => (
-          <div key={index} className={`p-4 ${getBackgroundColor(index)}`}>
+          <div key={index} className={`p-1 md:p-2 ${getBackgroundColor(index)}`}>
             {cell ? (
               cell === "X" ? (
                 <FaTimes className="w-full h-full text-red-500" />
